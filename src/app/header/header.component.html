@@ -1,0 +1,82 @@
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Recipe Book</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <ng-container *ngIf="isUnauthorized; else authorizedOptions">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              style="cursor: pointer"
+              routerLink="/authentication"
+              routerLinkActive="active"
+              >Authentication</a
+            >
+          </li>
+        </ng-container>
+        <ng-template #authorizedOptions>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/recipes"
+              routerLinkActive="active"
+              aria-current="page"
+              style="cursor: pointer"
+              >Recipe</a
+            >
+          </li>
+        </ng-template>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            style="cursor: pointer"
+            routerLink="/shopping-list"
+            routerLinkActive="active"
+            >Shopping List</a
+          >
+        </li>
+      </ul>
+      <ng-container *ngIf="!isUnauthorized">
+        <a
+          style="cursor: pointer"
+          class="link link-secondary text-decoration-none"
+          (click)="onLogout()"
+          >Logout</a
+        >
+        <span class="mx-2"></span>
+        <div class="btn-group">
+          <button
+            type="button"
+            data-bs-toggle="dropdown"
+            class="btn btn-secondary dropdown-toggle"
+          >
+            Manage
+          </button>
+          <ul class="dropdown-menu dropdown-menu-lg-end dropdown-menu-sm-start">
+            <li>
+              <button class="dropdown-item" (click)="onFetchRecipe()">
+                Fetch Recipes
+              </button>
+            </li>
+            <li>
+              <button class="dropdown-item" (click)="onSaveRecipe()">
+                Save Recipes
+              </button>
+            </li>
+          </ul>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</nav>

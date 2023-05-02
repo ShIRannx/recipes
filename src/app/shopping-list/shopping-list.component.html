@@ -1,0 +1,21 @@
+<div class="mt-3"></div>
+<div class="row">
+  <div class="col-sm-10">
+    <app-shopping-edit></app-shopping-edit>
+    <hr />
+    <div class="list-group">
+      <a
+        [@listItems]
+        (click)="onStartEdit(i)"
+        style="cursor: pointer"
+        *ngFor="
+          let ingre of ingredients | filter: fuzzySearchKeyWords;
+          let i = index
+        "
+        class="list-group-item list-group-item-action"
+      >
+        {{ ingre.name }} ({{ ingre.amount }})
+      </a>
+    </div>
+  </div>
+</div>

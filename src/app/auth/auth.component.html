@@ -1,0 +1,73 @@
+<br />
+<div class="row">
+  <div class="col-sm-12 col-lg-6 offset-lg-3">
+    <!-- <div
+      *ngIf="error"
+      class="alert alert-danger d-flex justify-content-between"
+    >
+      {{ error | humanizationText }}
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="this.error = ''"
+      ></button>
+    </div> -->
+    <ng-template appAnchor></ng-template>
+    <!-- <ng-template *ngIf="isLoading; else showForm" class="text-center">
+      <app-loading-spinner></app-loading-spinner>
+    </ng-template> -->
+
+    <form
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit()"
+      class="border border-2 p-3 rounded"
+    >
+      <div class="mb-2">
+        <label for="email" class="form-label fw-semibold">E-Mail</label>
+        <input
+          type="text"
+          name="email"
+          class="form-control"
+          formControlName="email"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label fw-semibold">Password</label>
+        <input
+          type="password"
+          name="password"
+          class="form-control"
+          formControlName="password"
+        />
+      </div>
+
+      <div>
+        <button
+          class="btn btn-primary"
+          type="submit"
+          [disabled]="loginForm.invalid"
+        >
+          <span
+            role="status"
+            aria-hidden="true"
+            *ngIf="isLoading; else signPrompt"
+            class="spinner-border spinner-border-sm"
+          ></span>
+          <ng-template #signPrompt>
+            Sign {{ isLogin ? 'In' : 'Up' }}
+          </ng-template>
+        </button>
+        |
+        <button
+          type="button"
+          [disabled]="isLoading"
+          class="btn btn-primary"
+          (click)="isLogin = !isLogin"
+        >
+          Switch to Sign {{ isLogin ? 'Up' : 'In' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
