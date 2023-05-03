@@ -10,6 +10,8 @@ import { AuthInterceptor } from './auth/auth.interceptor';
 import { HeaderComponent } from './header/header.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { StoreModule } from '@ngrx/store';
+import { ShoppingListReducer } from './shopping-list/store/shopping-list.reducer';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent, PageNotFoundComponent],
@@ -20,10 +22,11 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     HttpClientModule,
     ReactiveFormsModule,
     NgbModule,
+    StoreModule.forRoot({ shoppingList: ShoppingListReducer }),
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

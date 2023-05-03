@@ -4,7 +4,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { ShoppingListService } from '../shopping-list.service';
 import { Ingredient } from '../../shared/models/ingredient.model';
-
+import { Store } from '@ngrx/store';
+import {
+  AddIngredient,
+  DeleteIngredient,
+  UpdateIngredient,
+} from '../store/shopping-list.actions';
 
 @Component({
   selector: 'app-shopping-edit',
@@ -19,8 +24,9 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private shoppingListService: ShoppingListService
-  ) {}
+    private shoppingListService: ShoppingListService,
+    private store: Store<{ shoppingList: { ingredients: Ingredient[] } }>
+  ) { }
 
   ngOnInit(): void {
     this.formInit();
@@ -49,8 +55,8 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
 
   onDeleteItem() {
     if (this.editMode) {
-      this.shoppingListService.deleteIngre(this.itemIndex);
-      this.onClearItem();
+      this.store.dispatch(DeleteIngredient({ payload: this.itemIndex }));
+      // this.onClearItem();
     }
   }
 
@@ -64,11 +70,20 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
     let { name, amount } = this.ingreForm.value;
     name = name.replace(name[0], name[0].toUpperCase());
 
-    const index = this.shoppingListService.findIndexByName(name);
-    // index === -1 stands for whether ingre exists
-    index !== -1
-      ? this.shoppingListService.updateIngre(index, amount)
-      : this.shoppingListService.addIngre(new Ingredient(name, amount));
+    // const index = this.shoppingListService.findIndexByName(name);
+    // // index === -1 stands for whether ingre exists
+    // index !== -1
+    const newIngre = new Ingredient(name, amount);
+
+    this.editMode
+      ? this.store.dispatch(
+        UpdateIngredient({
+          payload: { index: this.itemIndex, ingredient: newIngre },
+        })
+      )
+      : this.store.dispatch(AddIngredient({ payload: newIngre }));
+    // ? this.shoppingListService.updateIngre(this.itemIndex, amount)
+    // : this.shoppingListService.addIngre(new Ingredient(name, amount));
     this.onClearItem();
   }
 

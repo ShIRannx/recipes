@@ -4,16 +4,11 @@
     <app-shopping-edit></app-shopping-edit>
     <hr />
     <div class="list-group">
-      <a
-        [@listItems]
-        (click)="onStartEdit(i)"
-        style="cursor: pointer"
-        *ngFor="
-          let ingre of ingredients | filter: fuzzySearchKeyWords;
+      <a [@listItems] (click)="onStartEdit(i)" style="cursor: pointer" *ngFor="
+          let ingre of (ingredients | async)?.ingredients ?? []
+            | filter : fuzzySearchKeyWords;
           let i = index
-        "
-        class="list-group-item list-group-item-action"
-      >
+        " class="list-group-item list-group-item-action">
         {{ ingre.name }} ({{ ingre.amount }})
       </a>
     </div>

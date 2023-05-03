@@ -15,7 +15,7 @@ export class ShoppingListService {
   fuzzySearch = new Subject<string>();
   ingredientsChanged = new Subject<Ingredient[]>();
 
-  constructor() {}
+  constructor() { }
 
   get ingredients() {
     return this._ingredients.slice();
