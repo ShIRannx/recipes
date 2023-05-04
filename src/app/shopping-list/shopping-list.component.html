@@ -6,7 +6,7 @@
     <div class="list-group">
       <a [@listItems] (click)="onStartEdit(i)" style="cursor: pointer" *ngFor="
           let ingre of (ingredients | async)?.ingredients ?? []
-            | filter : fuzzySearchKeyWords;
+            | filter : (search | async)?.search ?? '';
           let i = index
         " class="list-group-item list-group-item-action">
         {{ ingre.name }} ({{ ingre.amount }})

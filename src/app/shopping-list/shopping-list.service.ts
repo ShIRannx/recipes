@@ -12,10 +12,9 @@ export class ShoppingListService {
     new Ingredient('Tomatoes', 5),
   ];
   startEdit = new Subject<number>();
-  fuzzySearch = new Subject<string>();
   ingredientsChanged = new Subject<Ingredient[]>();
 
-  constructor() { }
+  constructor() {}
 
   get ingredients() {
     return this._ingredients.slice();

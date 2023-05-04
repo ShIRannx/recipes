@@ -6,7 +6,7 @@ import { Ingredient } from '../../shared/models/ingredient.model';
 })
 export class FilterPipe implements PipeTransform {
   transform(ingredients: Ingredient[], words: string): Ingredient[] {
-    return ingredients.length || words
+    return ingredients.length && words
       ? ingredients.filter(r =>
           r.name.toLowerCase().includes(words.toLowerCase())
         )

@@ -5,12 +5,13 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { ShoppingListService } from './shopping-list.service';
 import { Ingredient } from '../shared/models/ingredient.model';
 import { Store } from '@ngrx/store';
+import * as fromShoppingList from './store/shopping-list.reducer';
+import * as ShoppingListActions from './store/shopping-list.actions';
 
 @Component({
   selector: 'app-shopping-list',
@@ -25,28 +26,19 @@ import { Store } from '@ngrx/store';
   ],
 })
 export class ShoppingListComponent implements OnInit, OnDestroy {
-  fuzzySearchKeyWords = '';
-  fuzzySearchSubscription: Subscription;
+  search: Observable<{ search: string }>;
   ingredients: Observable<{ ingredients: Ingredient[] }>;
 
-  constructor(
-    private shoppingListService: ShoppingListService,
-    private store: Store<{ shoppingList: { ingredients: Ingredient[] } }>
-  ) { }
+  constructor(private store: Store<fromShoppingList.AppState>) {}
 
   onStartEdit(index: number) {
-    this.shoppingListService.startEdit.next(index);
+    this.store.dispatch(ShoppingListActions.startEdit({ payload: index }));
   }
 
   ngOnInit(): void {
+    this.search = this.store.select('shoppingList');
     this.ingredients = this.store.select('shoppingList');
-    this.fuzzySearchSubscription =
-      this.shoppingListService.fuzzySearch.subscribe(
-        words => (this.fuzzySearchKeyWords = words)
-      );
   }
 
-  ngOnDestroy(): void {
-    this.fuzzySearchSubscription.unsubscribe();
-  }
+  ngOnDestroy(): void {}
 }
