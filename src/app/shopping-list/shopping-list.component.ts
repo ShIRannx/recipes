@@ -5,13 +5,9 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Observable } from 'rxjs';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
-import { Ingredient } from '../shared/models/ingredient.model';
-import { Store } from '@ngrx/store';
-import * as fromShoppingList from './store/shopping-list.reducer';
-import * as ShoppingListActions from './store/shopping-list.actions';
+import { ShoppingListStore } from './store/shopping-list.state';
 
 @Component({
   selector: 'app-shopping-list',
@@ -25,20 +21,10 @@ import * as ShoppingListActions from './store/shopping-list.actions';
     ]),
   ],
 })
-export class ShoppingListComponent implements OnInit, OnDestroy {
-  search: Observable<{ search: string }>;
-  ingredients: Observable<{ ingredients: Ingredient[] }>;
-
-  constructor(private store: Store<fromShoppingList.AppState>) {}
+export class ShoppingListComponent {
+  store = inject(ShoppingListStore);
 
   onStartEdit(index: number) {
-    this.store.dispatch(ShoppingListActions.startEdit({ payload: index }));
+    this.store.startEdit(index);
   }
-
-  ngOnInit(): void {
-    this.search = this.store.select('shoppingList');
-    this.ingredients = this.store.select('shoppingList');
-  }
-
-  ngOnDestroy(): void {}
 }

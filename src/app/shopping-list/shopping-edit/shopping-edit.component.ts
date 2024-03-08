@@ -1,11 +1,12 @@
-import { Subscription } from 'rxjs';
-import { OnInit, Component, OnDestroy } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { OnInit, Component, OnDestroy, inject, effect } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  Validators,
+} from '@angular/forms';
 
-import { Ingredient } from '../../shared/models/ingredient.model';
-import { Store } from '@ngrx/store';
-import * as fromShoppingList from '../store/shopping-list.reducer';
-import * as ShoppingListActions from '../store/shopping-list.actions';
+import { ShoppingListStore } from '../store/shopping-list.state';
 
 @Component({
   selector: 'app-shopping-edit',
@@ -15,34 +16,30 @@ import * as ShoppingListActions from '../store/shopping-list.actions';
 export class ShoppingEditComponent implements OnInit, OnDestroy {
   editMode: boolean;
   itemIndex: number;
-  startEditingSubscription: Subscription;
 
-  ingreForm = this.formBuilder.group({
-    name: ['', [Validators.required]],
-    amount: [NaN, [Validators.required]],
-  });
+  ingreForm: FormGroup<{
+    name: FormControl<string>;
+    amount: FormControl<number>;
+  }>;
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private store: Store<fromShoppingList.AppState>
-  ) {}
+  store = inject(ShoppingListStore);
+
+  constructor(private fb: NonNullableFormBuilder) {
+    effect(() => {
+      this.itemIndex = this.store.editedIngredientIndex();
+      if (this.itemIndex > -1) {
+        this.editMode = true;
+        const name = this.store.ingredients()[this.itemIndex].name;
+        const amount = this.store.ingredients()[this.itemIndex].amount;
+        this.ingreForm.setValue({ name, amount });
+      }
+    });
+  }
 
   ngOnInit(): void {
-    this.startEditingSubscription = this.store
-      .select('shoppingList')
-      .subscribe(state => {
-        if (state.editedIngredientIndex > -1) {
-          this.editMode = true;
-          this.ingreForm.reset();
-          this.ingreForm.setValue({
-            name: state.editedIngredient?.name ?? '',
-            amount: state.editedIngredient?.amount ?? NaN,
-          });
-        } else this.editMode = false;
-      });
-    this.ingreForm.controls['name'].valueChanges.subscribe(name => {
-      if (this.ingreForm.pristine) return;
-      this.store.dispatch(ShoppingListActions.search({ payload: name ?? '' }));
+    this.ingreForm = this.fb.group({
+      name: ['', [Validators.required]],
+      amount: [NaN, [Validators.required]],
     });
   }
 
@@ -50,13 +47,13 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
     if (!this.editMode) return;
     this.editMode = false;
     this.ingreForm.reset();
-    this.store.dispatch(ShoppingListActions.deleteIngredient());
+    this.store.delIngre();
   }
 
   onClearItem() {
     this.editMode = false;
     this.ingreForm.reset();
-    this.store.dispatch(ShoppingListActions.stopEdit());
+    this.store.stopEdit();
   }
 
   onSubmit() {
@@ -64,22 +61,13 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
     let { name, amount } = this.ingreForm.value;
     if (!name || !amount) return;
     name = name.replace(name[0], name[0].toUpperCase());
-    const newIngre = new Ingredient(name, amount);
-    if (this.editMode) {
-      this.store.dispatch(
-        ShoppingListActions.updateIngredient({
-          payload: newIngre,
-        })
-      );
-    } else
-      this.store.dispatch(
-        ShoppingListActions.addIngredient({ payload: newIngre })
-      );
+
+    if (this.editMode) this.store.updateIngre({ name, amount });
+    else this.store.addIngre(name, amount);
     this.onClearItem();
   }
 
   ngOnDestroy(): void {
-    this.startEditingSubscription.unsubscribe();
-    this.store.dispatch(ShoppingListActions.stopEdit());
+    this.store.stopEdit();
   }
 }

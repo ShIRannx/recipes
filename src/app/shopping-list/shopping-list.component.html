@@ -4,13 +4,26 @@
     <app-shopping-edit></app-shopping-edit>
     <hr />
     <div class="list-group">
-      <a [@listItems] (click)="onStartEdit(i)" style="cursor: pointer" *ngFor="
-          let ingre of (ingredients | async)?.ingredients ?? []
-            | filter : (search | async)?.search ?? '';
-          let i = index
-        " class="list-group-item list-group-item-action">
-        {{ ingre.name }} ({{ ingre.amount }})
-      </a>
+      @for (
+        ingre of store.ingredients();
+        track ingre.name;
+        let index = $index
+      ) {
+        <a
+          style="cursor: pointer"
+          (click)="onStartEdit(index)"
+          class="list-group-item list-group-item"
+        >
+          {{ ingre.name }} ({{ ingre.amount }})
+        </a>
+      }
+      <!-- <a (click)="onStartEdit(i)" style="cursor: pointer" *ngFor=" -->
+      <!--     let ingre of (ingredients | async)?.ingredients ?? [] -->
+      <!--       | filter : (search | async)?.search ?? ''; -->
+      <!--     let i = index -->
+      <!--   " class="list-group-item list-group-item-action"> -->
+      <!--   {{ ingre.name }} ({{ ingre.amount }}) -->
+      <!-- </a> -->
     </div>
   </div>
 </div>
