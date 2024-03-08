@@ -22,9 +22,7 @@ interface AuthFormData {
   password: string;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AuthService {
   FIREBASE_URL = 'https://identitytoolkit.googleapis.com/v1';
   SIGNUP_ENDPOINT = `${this.FIREBASE_URL}/accounts:signUp`;
@@ -34,7 +32,10 @@ export class AuthService {
   // A new subscription of plain Subject will only get the value of the plain Subject emitted later
   user = new BehaviorSubject<User | null>(null);
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {
     this.loadLocalCredential();
   }
 
@@ -47,7 +48,7 @@ export class AuthService {
           params: {
             key: environment.firebaseApiKey,
           },
-        }
+        },
       )
       .pipe(catchError(this._errorHandler), tap(this._handleAuthentication));
   }
@@ -61,7 +62,7 @@ export class AuthService {
           params: {
             key: environment.firebaseApiKey,
           },
-        }
+        },
       )
       .pipe(catchError(this._errorHandler), tap(this._handleAuthentication));
   }
@@ -86,7 +87,7 @@ export class AuthService {
 
   private _errorHandler(err: HttpErrorResponse) {
     return throwError(
-      () => new Error(err.error?.error?.message ?? 'Unknow Error Occurred!')
+      () => new Error(err.error?.error?.message ?? 'Unknow Error Occurred!'),
     );
   }
 
