@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 import { Ingredient } from '../shared/models/ingredient.model';
 
-@Injectable()
+@Injectable({ providedIn: 'any' })
 export class ShoppingListService {
   private _ingredients: Ingredient[] = [
     new Ingredient('Apples', 6),

@@ -22,7 +22,7 @@ interface AuthFormData {
   password: string;
 }
 
-@Injectable()
+@Injectable({ providedIn: 'any' })
 export class AuthService {
   FIREBASE_URL = 'https://identitytoolkit.googleapis.com/v1';
   SIGNUP_ENDPOINT = `${this.FIREBASE_URL}/accounts:signUp`;
