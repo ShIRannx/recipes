@@ -1,8 +1,16 @@
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import {
+  addEntities,
+  addEntity,
+  removeEntity,
+  updateEntity,
+  withEntities,
+} from '@ngrx/signals/entities';
 import { Recipe } from '../recipe.model';
 import { Ingredient } from 'src/app/shared/models/ingredient.model';
 import { inject } from '@angular/core';
 import { ShoppingListStore } from 'src/app/shopping-list/store/shopping-list.state';
+import { withSelectedEntity } from './selected-entitiy.feature';
 
 export interface RecipeState {
   recipes: Recipe[];
@@ -17,26 +25,20 @@ export const initialState: RecipeState = {
 export const RecipeStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
+  withEntities<Recipe>(),
+  withSelectedEntity(),
   withMethods((store, slStore = inject(ShoppingListStore)) => ({
     addRecipe(recipe: Recipe) {
-      patchState(store, state => ({ recipes: [...state.recipes, recipe] }));
+      patchState(store, addEntity(recipe));
     },
-    delRecipe(index: number) {
-      patchState(store, state => ({
-        recipes: [...state.recipes.filter((_, i) => i !== index)],
-      }));
+    addRecipes(recipes: Recipe[]) {
+      patchState(store, addEntities(recipes));
+    },
+    delRecipe(index: string) {
+      patchState(store, removeEntity(index));
     },
     updateRecipe(recipe: Recipe) {
-      patchState(store, state => {
-        const index = state.recipes.findIndex(r => r.id === recipe.id);
-
-        const currentRecipe = state.recipes[index];
-        const updatedRecipe = { ...currentRecipe, ...recipe };
-        const updatedRecipes = [...state.recipes];
-        updatedRecipes[index] = updatedRecipe;
-
-        return { recipes: updatedRecipes };
-      });
+      patchState(store, updateEntity({ id: recipe.id, changes: recipe }));
     },
     addIngresToShoppingList(ingres: Ingredient[]) {
       slStore.addIngres(ingres);

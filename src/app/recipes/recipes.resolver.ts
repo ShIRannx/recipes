@@ -1,20 +1,17 @@
+import { Injectable, inject } from '@angular/core';
 
-import { Injectable } from '@angular/core';
-
-import { Recipe } from './recipe.model';
-import { RecipesService } from './recipes.service';
 import { DataStorageService } from '../shared/data-storage.service';
+import { RecipeStore } from './store/recipe.state';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'any',
 })
-export class RecipesResolver  {
-  constructor(
-    private recipesService: RecipesService,
-    private dataStorageService: DataStorageService
-  ) {}
+export class RecipesResolver {
+  store = inject(RecipeStore);
+  dataStorageSvc = inject(DataStorageService);
+
   resolve() {
-    const { recipes } = this.recipesService;
-    return recipes.length ? recipes : this.dataStorageService.fetchRecipe();
+    const recipes = this.store.entities();
+    return recipes.length ? recipes : this.dataStorageSvc.fetchRecipe();
   }
 }

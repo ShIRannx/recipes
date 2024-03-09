@@ -1,8 +1,9 @@
 import { map, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Recipe } from '../recipes/recipe.model';
 import { RecipesService } from '../recipes/recipes.service';
+import { RecipeStore } from '../recipes/store/recipe.state';
 
 @Injectable({
   providedIn: 'root',
@@ -13,9 +14,10 @@ export class DataStorageService {
   firebaseApi =
     'https://shirann-angular-storage-default-rtdb.asia-southeast1.firebasedatabase.app';
 
+  recipeStore = inject(RecipeStore);
   constructor(
     private http: HttpClient,
-    private recipesService: RecipesService
+    private recipesService: RecipesService,
   ) {}
 
   fetchRecipe() {
@@ -24,10 +26,10 @@ export class DataStorageService {
       .pipe(
         map(recipes =>
           recipes.map(recipe =>
-            Object.assign(recipe, { ingredients: recipe?.ingredients ?? [] })
-          )
+            Object.assign(recipe, { ingredients: recipe?.ingredients ?? [] }),
+          ),
         ),
-        tap(recipes => (this.recipesService.recipes = recipes))
+        tap(recipes => this.recipeStore.addRecipes(recipes)),
       );
   }
   // return this.authService.user.pipe(
@@ -58,7 +60,7 @@ export class DataStorageService {
   saveRecipe() {
     return this.http.put(
       `${this.firebaseApi}/${this.recipesTable}`,
-      this.recipesService.recipes
+      this.recipesService.recipes,
     );
   }
 }

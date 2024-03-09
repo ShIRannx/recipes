@@ -1,37 +1,40 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Recipe } from '../recipe.model';
-import { RecipesService } from '../recipes.service';
+import { RecipeStore } from '../store/recipe.state';
+import { patchState } from '@ngrx/signals';
 
 @Component({
   selector: 'app-recipe-detail',
   templateUrl: './recipe-detail.component.html',
   styleUrls: ['./recipe-detail.component.css'],
 })
-export class RecipeDetailComponent implements OnInit {
+export class RecipeDetailComponent implements OnDestroy {
   recipe: Recipe;
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private recipesService: RecipesService
-  ) {}
+  router = inject(Router);
+  store = inject(RecipeStore);
+  route = inject(ActivatedRoute);
 
-  ngOnInit(): void {
-    this.route.params.subscribe(
-      params => (this.recipe = this.recipesService.getRecipeById(params['id']))
-    );
-    // this.route.data.subscribe(data => (this.recipe = data['recipe']));
+  @Input('id') set _recipe(id: string) {
+    patchState(this.store, { selectedEntityId: id });
+    const recipe = this.store.selectedEntity();
+    if (!recipe) return;
+    this.recipe = recipe;
   }
 
   onAddIngresToShoppingList() {
-    if (!this.recipe.ingredients) return;
-    this.recipesService.addIngresToShoppingList(this.recipe.ingredients);
+    const ingres = this.recipe.ingredients;
+    if (!ingres) return;
+    this.store.addIngresToShoppingList(ingres);
   }
 
   onDeleteRecipe() {
-    this.recipesService.delete(this.recipe.id);
+    this.store.delRecipe(this.recipe.id);
     this.router.navigate(['..'], { relativeTo: this.route });
+  }
+  ngOnDestroy(): void {
+    patchState(this.store, { selectedEntityId: null });
   }
 }
