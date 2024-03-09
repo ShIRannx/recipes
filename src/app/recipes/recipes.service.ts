@@ -5,24 +5,10 @@ import { Recipe } from './recipe.model';
 import { Ingredient } from '../shared/models/ingredient.model';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
 
-@Injectable({ providedIn: 'any' })
+@Injectable({ providedIn: 'root' })
 export class RecipesService {
   private _recipes: Recipe[] = [];
   recipesChanged = new Subject<Recipe[]>();
-  // new Recipe(
-  //   '22a6a1d94783468e87139d5054642fb3',
-  //   'Pizza',
-  //   'Test Desc',
-  //   'https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-  //   [new Ingredient('meat', 1), new Ingredient('chips', 10)]
-  // ),
-  // new Recipe(
-  //   'd4992ba08b094bcea1c9e35e9195fe29',
-  //   'Pizza2',
-  //   'Test Desc',
-  //   'https://images.unsplash.com/photo-1590947132387-155cc02f3212?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8cGl6emF8ZW58MHx8MHx8&auto=format&fit=crop&w=600&q=60',
-  //   [new Ingredient('meat', 2), new Ingredient('chips', 5)]
-  // ),
 
   constructor(private shoppingListService: ShoppingListService) {}
 

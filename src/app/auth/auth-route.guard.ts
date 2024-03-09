@@ -7,12 +7,15 @@ import { AuthService } from './auth.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthRouteGuard  {
-  constructor(private authService: AuthService, private router: Router) {}
+export class AuthRouteGuard {
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
   canActivate(): Observable<boolean | UrlTree> {
     return this.authService.user.pipe(
       take(1),
-      map(user => (user ? this.router.createUrlTree(['/']) : true))
+      map(user => (user ? this.router.createUrlTree(['/recipes']) : true)),
     );
   }
 }

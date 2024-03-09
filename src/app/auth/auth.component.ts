@@ -1,6 +1,6 @@
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { AuthService } from './auth.service';
@@ -25,8 +25,9 @@ export class AuthComponent implements OnInit {
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
-    private authService: AuthService
   ) {}
+  authSvc = inject(AuthService);
+  route = inject(Router);
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
@@ -39,8 +40,8 @@ export class AuthComponent implements OnInit {
     if (this.loginForm.invalid) return;
     this._startLoading();
     const authObs = this.isLogin
-      ? this.authService.signIn(this.loginForm.value)
-      : this.authService.signUp(this.loginForm.value);
+      ? this.authSvc.signIn(this.loginForm.value)
+      : this.authSvc.signUp(this.loginForm.value);
 
     authObs.subscribe({
       next: _ => {
